@@ -1,0 +1,10 @@
+function [b,stats]=logistic_with _lapse(Coh,Choice,lapse)
+%Coh:stimulus parameter -1 to 1
+%Choice: behavior 0 or 1 (0: low Coh choice, 1: high Coh choice)
+%lapse: error rate for high Coh (<-0.8 or >0.8)
+
+eval(['link = @(mu) log((mu-',num2str(lapse),')./ (1-mu-',num2str(lapse),'));']);
+eval(['derlink = @(mu) (1-',num2str(2.*lapse),' )./ ((mu-',num2str(lapse),').* (1-mu-',num2str(lapse),'));']);
+eval(['invlink = @(mu) ',num2str(lapse),' + (1 - 2*',num2str(lapse),') ./ (1 + exp(-mu));']);
+F = {link, derlink, invlink};
+[b,~,stats] = glmfit(Coh,Choice,'binomial','link',F);
