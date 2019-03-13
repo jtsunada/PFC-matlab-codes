@@ -1,0 +1,18 @@
+function detection_neural_onset
+
+%still editing below
+
+p_values=NaN(session_num,size(Data,2))
+startbin=71;
+endbin=251;
+for i=1:session_num
+  for j = startbin:endbin
+    p=ranksum(Data(condition1,j),Data(condition2,j));
+    if p <0.05
+      p_values(i,j)=0;
+    else
+      p_values(i,j)=1;
+    end
+  end
+end
+  
