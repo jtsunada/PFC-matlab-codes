@@ -1,18 +1,35 @@
-function detection_neural_onset
+function neural_onset = detection_neural_onset(Data)
 
 %still editing below
+Data: trial x time(from -0.6s to 2s, 10ms bins)
 
-p_values=NaN(session_num,size(Data,2))
+
+bins_10ms=-0.6:0.01:2;
+p_values=NaN(1,size(Data,2))
 startbin=71;
 endbin=251;
-for i=1:session_num
+
   for j = startbin:endbin
     p=ranksum(Data(condition1,j),Data(condition2,j));
     if p <0.05
-      p_values(i,j)=0;
+      p_values(1,j)=0;
     else
-      p_values(i,j)=1;
+      p_values(1,j)=1;
     end
   end
+
+%FDR correction
+temp=p_values(1,startbin:endbin);
+%FDR function obtained from https://jp.mathworks.com/matlabcentral/fileexchange/27418-fdr_bh
+[h,~,~,adj_p]=fdr_bh(temp,.05,'pdep','no');
+p_values(1,startbin:endbin)=1-h;
+
+test_length=3; %i.e., 3+1 consecutive bins
+
+temp=p_values(1,:);
+for j=1:size(temp,2)-test_length
+    if temp(j:j+test_length)==zeros(1,test_length+1);
+        neural_onset=bins_10ms(j);
+        break
+    end
 end
-  
